@@ -17,6 +17,7 @@ Run with ngrok for dev:
 
 import asyncio
 import logging
+import sys
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Header, Request
@@ -207,41 +208,63 @@ def _split_message(text: str, max_len: int = 4096) -> list[str]:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Initialise the Telegram bot and database on startup."""
+    # Force a startup banner to stdout so Railway always shows something
+    print("[STARTUP] Nairametrics Research Agent starting…", flush=True)
 
     # 1. Init database
-    await init_db()
-    logger.info("Database initialised.")
+    try:
+        await init_db()
+        logger.info("Database initialised.")
+        print("[STARTUP] Database initialised.", flush=True)
+    except Exception as exc:
+        logger.error("Database init failed: %s", exc, exc_info=True)
+        print(f"[STARTUP] Database init FAILED: {exc}", flush=True)
+        # Non-fatal — health check can still respond
 
     # 2. Build Telegram bot application
-    bot_app = (
-        Application.builder()
-        .token(TELEGRAM_BOT_TOKEN)
-        .build()
-    )
+    bot_app = None
+    try:
+        bot_app = (
+            Application.builder()
+            .token(TELEGRAM_BOT_TOKEN)
+            .build()
+        )
 
-    # 3. Register handlers
-    bot_app.add_handler(CommandHandler("start", cmd_start))
-    bot_app.add_handler(CommandHandler("help", cmd_help))
-    bot_app.add_handler(CommandHandler("new", cmd_new))
-    bot_app.add_handler(CommandHandler("clear", cmd_clear))
-    bot_app.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message)
-    )
+        # 3. Register handlers
+        bot_app.add_handler(CommandHandler("start", cmd_start))
+        bot_app.add_handler(CommandHandler("help", cmd_help))
+        bot_app.add_handler(CommandHandler("new", cmd_new))
+        bot_app.add_handler(CommandHandler("clear", cmd_clear))
+        bot_app.add_handler(
+            MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message)
+        )
 
-    # 4. Initialise and start the bot
-    await bot_app.initialize()
-    await bot_app.start()
+        # 4. Initialise and start the bot
+        await bot_app.initialize()
+        await bot_app.start()
 
-    # Store in app state so the webhook endpoint can access it
-    app.state.bot_app = bot_app
-    app.state.bot = bot_app.bot
-    logger.info("Telegram bot started.")
+        # Store in app state so the webhook endpoint can access it
+        app.state.bot_app = bot_app
+        app.state.bot = bot_app.bot
+        logger.info("Telegram bot started.")
+        print("[STARTUP] Telegram bot started.", flush=True)
+    except Exception as exc:
+        logger.error("Telegram bot init failed: %s", exc, exc_info=True)
+        print(f"[STARTUP] Telegram bot init FAILED: {exc}", flush=True)
+        # Store None so webhook can check and return 503 gracefully
+        app.state.bot_app = None
+        app.state.bot = None
 
+    print("[STARTUP] Ready to serve requests.", flush=True)
     yield
 
     # 5. Cleanup
-    await bot_app.stop()
-    await bot_app.shutdown()
+    if bot_app is not None:
+        try:
+            await bot_app.stop()
+            await bot_app.shutdown()
+        except Exception:
+            pass
     logger.info("Telegram bot stopped.")
 
 
@@ -265,8 +288,12 @@ app.add_middleware(
 # Mount Mini App API
 app.include_router(api_router)
 
-# Mount Mini App static files
-app.mount("/app", StaticFiles(directory=str(MINI_APP_DIR), html=True), name="mini-app")
+# Mount Mini App static files (non-fatal if directory is missing)
+try:
+    app.mount("/app", StaticFiles(directory=str(MINI_APP_DIR), html=True), name="mini-app")
+    logger.info("Mini App static files mounted from %s", MINI_APP_DIR)
+except Exception as exc:
+    logger.warning("Could not mount Mini App static files: %s", exc)
 
 
 # ---------------------------------------------------------------------------
@@ -275,8 +302,9 @@ app.mount("/app", StaticFiles(directory=str(MINI_APP_DIR), html=True), name="min
 
 @app.get("/health")
 async def health():
-    """Health check for UptimeRobot keep-alive pings."""
-    return {"status": "ok"}
+    """Health check for Railway / UptimeRobot keep-alive pings."""
+    bot_ok = getattr(app.state, "bot_app", None) is not None
+    return {"status": "ok", "bot": "connected" if bot_ok else "unavailable"}
 
 
 @app.post("/webhook")
@@ -290,9 +318,15 @@ async def webhook(
     if x_telegram_bot_api_secret_token != WEBHOOK_SECRET:
         raise HTTPException(status_code=403, detail="Invalid secret token")
 
+    # Guard: bot must be initialised
+    bot_app = getattr(app.state, "bot_app", None)
+    bot = getattr(app.state, "bot", None)
+    if bot_app is None or bot is None:
+        raise HTTPException(status_code=503, detail="Bot not initialised")
+
     # Parse the update and put it in the bot's queue
     data = await request.json()
-    update = Update.de_json(data, app.state.bot)
-    await app.state.bot_app.update_queue.put(update)
+    update = Update.de_json(data, bot)
+    await bot_app.update_queue.put(update)
 
     return {"ok": True}

@@ -120,11 +120,15 @@ def _require_env(key: str, friendly_name: str = "") -> str:
     """Get a required env var with a clear error message."""
     val = os.getenv(key, "")
     if not val:
-        raise RuntimeError(
+        msg = (
             f"Missing required environment variable: {key}"
             + (f" ({friendly_name})" if friendly_name else "")
             + "\nSet it in your .env file (local) or Railway dashboard (production)."
         )
+        # Print to stdout so Railway/cloud logs always show this,
+        # even if logging hasn't been configured yet.
+        print(f"[CONFIG FATAL] {msg}", flush=True)
+        raise RuntimeError(msg)
     return val
 
 
