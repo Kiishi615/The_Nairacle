@@ -264,7 +264,9 @@ function createLiveAiBubble(){
     <div class="msg__avatar-wrap nebula-icon-bg"><img src="profile-photo.png" class="msg__avatar-img" alt=""/></div>
     <div class="msg__bubble nebula-card msg__bubble--ai">
       <div class="msg__tool-status" style="display:none;"></div>
-      <div class="msg__content"><span class="streaming-cursor"></span></div>
+      <div class="msg__content">
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+      </div>
     </div>`;
   el.msgs.appendChild(wrapper);
   scrollDown();
@@ -283,6 +285,11 @@ function handleSSE(type, data, bubble, onText, onDone){
     case "token":
       if(data.content){
         onText(data.content);
+        
+        // Remove typing dots if they are still there
+        const dots = contentEl.querySelector(".typing-dots");
+        if(dots) dots.remove();
+
         // Remove cursor, append text, re-add cursor
         const cursor = contentEl.querySelector(".streaming-cursor");
         if(cursor) cursor.remove();
