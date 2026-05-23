@@ -26,12 +26,7 @@ COPY research_agent/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# Pre-download the cross-encoder reranker model at BUILD time (~90MB).
-# Baked into the image so there's no cold-start download.
-RUN python -c "\
-from sentence_transformers import CrossEncoder; \
-CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2'); \
-print('Reranker model cached.')"
+# Reranker model caching removed to save memory on Railway (OOM prevention).
 
 # ---------------------------------------------------------------------------
 # Stage 2 — Runtime

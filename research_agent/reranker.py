@@ -6,34 +6,19 @@ by query–passage relevance, improving precision over embedding-only search.
 """
 
 import logging
-import threading
-
-from sentence_transformers import CrossEncoder
+from pinecone import Pinecone
+from research_agent.config import PINECONE_API_KEY
 
 logger = logging.getLogger("research_agent.reranker")
 
 # ---------------------------------------------------------------------------
-# Lazy-loaded singleton — model loads once on first call (thread-safe)
+# Pinecone Client for Inference API
 # ---------------------------------------------------------------------------
-_model: CrossEncoder | None = None
-_model_lock = threading.Lock()
-
-
-def _get_model() -> CrossEncoder:
-    """Return the cross-encoder, loading it on first use (thread-safe)."""
-    global _model
-    if _model is None:
-        with _model_lock:
-            # Double-check after acquiring lock
-            if _model is None:
-                logger.info("Loading cross-encoder reranker model …")
-                _model = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
-                logger.info("Reranker model loaded.")
-    return _model
+pc = Pinecone(api_key=PINECONE_API_KEY)
 
 
 def rerank(query: str, matches: list, top_k: int) -> list:
-    """Rerank Pinecone matches using the cross-encoder.
+    """Rerank Pinecone matches using Pinecone's Serverless Inference API.
 
     Args:
         query:   The user's search query.
@@ -47,9 +32,7 @@ def rerank(query: str, matches: list, top_k: int) -> list:
     if not matches:
         return []
 
-    model = _get_model()
-
-    # Build (query, passage) pairs for the cross-encoder
+    # Build passages for the inference API
     passages = []
     for m in matches:
         meta = m.metadata
@@ -59,13 +42,27 @@ def rerank(query: str, matches: list, top_k: int) -> list:
         )
         passages.append(text)
 
-    scores = model.predict([(query, p) for p in passages])
+    try:
+        # Send to Pinecone Inference API
+        result = pc.inference.rerank(
+            model="pinecone-rerank-v0",
+            query=query,
+            documents=passages,
+            top_n=top_k,
+            return_documents=False
+        )
 
-    # Pair each match with its cross-encoder score and sort descending
-    scored = sorted(
-        zip(matches, scores),
-        key=lambda x: x[1],
-        reverse=True,
-    )
+        scored = []
+        # Pinecone returns results in result.data
+        for r in result.data:
+            # Safely handle both object attribute and dictionary access
+            idx = r.index if hasattr(r, 'index') else r['index']
+            score = r.score if hasattr(r, 'score') else r['score']
+            original_match = matches[idx]
+            scored.append((original_match, score))
 
-    return scored[:top_k]
+        return scored
+    except Exception as exc:
+        logger.error("Pinecone Inference rerank failed: %s", exc)
+        # Fallback to original score ordering if API fails
+        return [(m, m.score) for m in matches[:top_k]]
