@@ -64,5 +64,6 @@ EXPOSE ${PORT}
 HEALTHCHECK --interval=60s --timeout=10s --start-period=180s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:${PORT}/health')" || exit 1
 
-# Start the server
-CMD uvicorn research_agent.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# Start the server — JSON form for proper signal handling,
+# sh -c for $PORT expansion
+CMD ["sh", "-c", "uvicorn research_agent.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
