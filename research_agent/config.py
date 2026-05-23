@@ -104,7 +104,7 @@ LOG_DIR.mkdir(parents=True, exist_ok=True)
 # Import from within the package (no sys.path manipulation needed)
 from research_agent.logging_setup import setup_logging  # noqa: E402
 
-_is_cloud = os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("KOYEB_APP_NAME") or os.getenv("DYNO") or os.getenv("RENDER")
+_is_cloud = os.getenv("RAILWAY_ENVIRONMENT_NAME") or os.getenv("KOYEB_APP_NAME") or os.getenv("DYNO") or os.getenv("RENDER")
 
 setup_logging(
     level=_get_int("logging", "level"),
