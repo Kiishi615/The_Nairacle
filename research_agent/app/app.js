@@ -176,6 +176,7 @@ async function send(){
   // Create a live AI bubble for streaming
   const liveBubble = createLiveAiBubble();
   let fullText = "";
+  let doneText = "";  // authoritative final from server's done event
   let streamOk = false;
 
   try {
@@ -207,7 +208,10 @@ async function send(){
         } else if (line.startsWith("data: ") && eventType) {
           try {
             const data = JSON.parse(line.slice(6));
-            handleSSE(eventType, data, liveBubble, (t) => { fullText += t; });
+            handleSSE(eventType, data, liveBubble,
+              (t) => { fullText += t; },
+              (t) => { doneText = t; }
+            );
           } catch(e) { /* skip malformed */ }
           eventType = "";
         }
@@ -236,9 +240,10 @@ async function send(){
     }
   }
 
-  // Finalize: push the complete message into state and re-render with markdown
-  if (fullText) {
-    st.messages.push({role:"assistant",content:fullText,created_at:new Date().toISOString()});
+  // Finalize: prefer accumulated tokens, fall back to server's done event
+  const finalContent = fullText || doneText;
+  if (finalContent) {
+    st.messages.push({role:"assistant",content:finalContent,created_at:new Date().toISOString()});
   } else {
     st.messages.push({role:"assistant",content:"I wasn't able to generate a response. Please try again.",created_at:new Date().toISOString()});
   }
@@ -270,14 +275,14 @@ function removeLiveAiBubble(bubble){
   if(bubble && bubble.parentNode) bubble.parentNode.removeChild(bubble);
 }
 
-function handleSSE(type, data, bubble, appendText){
+function handleSSE(type, data, bubble, onText, onDone){
   const contentEl = bubble.querySelector(".msg__content");
   const toolEl = bubble.querySelector(".msg__tool-status");
 
   switch(type){
     case "token":
       if(data.content){
-        appendText(data.content);
+        onText(data.content);
         // Remove cursor, append text, re-add cursor
         const cursor = contentEl.querySelector(".streaming-cursor");
         if(cursor) cursor.remove();
@@ -301,11 +306,15 @@ function handleSSE(type, data, bubble, appendText){
       break;
 
     case "done":
-      // Final content — handled after the stream loop
+      // Authoritative final content from the server.
+      // If we missed tokens during streaming, use this instead.
       if(data.content){
-        // Overwrite appendText tracker with the authoritative final
-        // (the caller already accumulated tokens, so this is a no-op
-        //  unless tokens were missed)
+        onDone(data.content);
+      }
+      // Remove streaming cursor
+      {
+        const c = contentEl.querySelector(".streaming-cursor");
+        if(c) c.remove();
       }
       break;
 

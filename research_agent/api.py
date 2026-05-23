@@ -211,10 +211,12 @@ async def stream_message(session_id: str, body: MessageRequest,
                 if kind == "on_chat_model_stream":
                     chunk = event.get("data", {}).get("chunk")
                     if chunk and hasattr(chunk, "content") and chunk.content:
-                        # Only stream tokens from the agent node, not from
-                        # internal tool-calling sub-chains
+                        # Only stream tokens from the model node, not from
+                        # internal tool-calling sub-chains.
+                        # create_agent (langchain v1.2+) uses "model";
+                        # legacy create_react_agent used "agent".
                         node = meta.get("langgraph_node", "")
-                        if node == "agent":
+                        if node in ("model", "agent"):
                             content = chunk.content
                             # Handle string content
                             if isinstance(content, str) and content:
@@ -257,10 +259,27 @@ async def stream_message(session_id: str, body: MessageRequest,
             full_response = full_response or "I encountered an error while researching. Please try again."
 
         # --- Finalize --------------------------------------------------------
-        # If no tokens were streamed (e.g. the agent returned a direct message
-        # without streaming), extract from the last message
+        # If no tokens were streamed (e.g. model node name changed, or the
+        # agent returned a direct message without streaming), try to
+        # extract the actual response from the agent's checkpoint state.
         if not full_response:
-            # The agent may have completed via invoke-style internally
+            try:
+                state = await agent.aget_state(
+                    config={"configurable": {"thread_id": session_id}}
+                )
+                last_msg = state.values.get("messages", [])[-1]
+                if hasattr(last_msg, "content") and last_msg.content:
+                    full_response = last_msg.content
+                    logger.info(
+                        "Recovered response from agent state for session %s",
+                        session_id,
+                    )
+            except Exception as fallback_err:
+                logger.warning(
+                    "Failed to recover response from state: %s", fallback_err
+                )
+
+        if not full_response:
             full_response = "I wasn't able to generate a response. Please try again."
 
         yield _sse_event("done", {"content": full_response})
