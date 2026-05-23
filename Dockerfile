@@ -34,8 +34,7 @@ RUN adduser \
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
 # into this layer.
-RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=bind,source=requirements.txt,target=requirements.txt \
+RUN --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
 
 # Switch to the non-privileged user to run the application.
@@ -48,4 +47,4 @@ COPY --chown=appuser:appuser . .
 EXPOSE 8000
 
 # Run the application.
-CMD uvicorn 'research_agent.main:app' --host=0.0.0.0 --port=8000
+CMD uvicorn research_agent.main:app --host 0.0.0.0 --port ${PORT:-8000}
