@@ -20,8 +20,8 @@ from research_agent.config import TELEGRAM_BOT_TOKEN
 
 logger = logging.getLogger("research_agent.auth")
 
-# Explicitly check APP_ENV — default is "prod" for safety
-_APP_ENV = os.getenv("APP_ENV", "prod").lower()
+# Explicitly check APP_ENV — default is "dev" for local testing
+_APP_ENV = os.getenv("APP_ENV", "dev").lower()
 _IS_DEV = _APP_ENV == "dev"
 
 if _IS_DEV:
@@ -106,6 +106,14 @@ async def verify_telegram_auth(request: Request) -> int:
 
     # No init data at all
     if not init_data:
+        # Fallback to anonymous web user if X-Anonymous-User-Id is present
+        anon_id_str = request.headers.get("X-Anonymous-User-Id", "")
+        if anon_id_str:
+            try:
+                return int(anon_id_str)
+            except ValueError:
+                pass
+
         if _IS_DEV:
             return 12345  # Fixed dev user ID for local browser testing
         raise HTTPException(status_code=401, detail="Missing Telegram auth")

@@ -6,6 +6,8 @@
 "use strict";
 const API="/api",TG=!!(window.Telegram&&window.Telegram.WebApp),tg=TG?window.Telegram.WebApp:null;
 const st={sessions:[],activeId:null,messages:[],loading:false,userId:null};
+let anonId=localStorage.getItem("anon_user_id");
+if(!anonId){anonId=Math.floor(Math.random()*2147483647).toString();localStorage.setItem("anon_user_id",anonId);}
 const $=s=>document.querySelector(s);
 const el={
   sidebar:$("#sidebar"),overlay:$("#sidebar-overlay"),btnMenu:$("#btn-menu"),
@@ -22,6 +24,7 @@ function haptic(s){tg?.HapticFeedback?.impactOccurred(s)}
 async function api(p,o={}){
   const h={"Content-Type":"application/json",...o.headers};
   if(TG&&tg.initData)h["X-Telegram-Init-Data"]=tg.initData;
+  else h["X-Anonymous-User-Id"]=anonId;
   try{const r=await fetch(API+p,{...o,headers:h});if(!r.ok)throw new Error(r.status);return await r.json()}
   catch(e){console.warn("API:",e.message);return null}
 }
@@ -29,6 +32,7 @@ async function api(p,o={}){
 function apiHeaders(){
   const h={"Content-Type":"application/json"};
   if(TG&&tg.initData)h["X-Telegram-Init-Data"]=tg.initData;
+  else h["X-Anonymous-User-Id"]=anonId;
   return h;
 }
 
