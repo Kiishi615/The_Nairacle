@@ -1,0 +1,732 @@
+[
+  {
+    "ticker": "NSENG:ARADEL",
+    "name": "ARADEL",
+    "description": "Aradel Holdings Plc"
+  },
+  {
+    "ticker": "NSENG:ZENITHBANK",
+    "name": "ZENITHBANK",
+    "description": "Zenith Bank PLC"
+  },
+  {
+    "ticker": "NSENG:MTNN",
+    "name": "MTNN",
+    "description": "MTN Nigeria Communications Plc"
+  },
+  {
+    "ticker": "NSENG:DANGCEM",
+    "name": "DANGCEM",
+    "description": "Dangote Cement PLC"
+  },
+  {
+    "ticker": "NSENG:GTCO",
+    "name": "GTCO",
+    "description": "Guaranty Trust Holding Company Plc"
+  },
+  {
+    "ticker": "NSENG:ACCESSCORP",
+    "name": "ACCESSCORP",
+    "description": "Access Holdings Plc"
+  },
+  {
+    "ticker": "NSENG:UBA",
+    "name": "UBA",
+    "description": "United Bank for Africa PLC"
+  },
+  {
+    "ticker": "NSENG:JBERGER",
+    "name": "JBERGER",
+    "description": "Julius Berger Nigeria Plc"
+  },
+  {
+    "ticker": "NSENG:WAPCO",
+    "name": "WAPCO",
+    "description": "Lafarge Africa Plc"
+  },
+  {
+    "ticker": "NSENG:OKOMUOIL",
+    "name": "OKOMUOIL",
+    "description": "Okomu Oil Palm Co. Plc"
+  },
+  {
+    "ticker": "NSENG:PRESCO",
+    "name": "PRESCO",
+    "description": "Presco PLC"
+  },
+  {
+    "ticker": "NSENG:FIRSTHOLDCO",
+    "name": "FIRSTHOLDCO",
+    "description": "First HoldCo Plc"
+  },
+  {
+    "ticker": "NSENG:UNILEVER",
+    "name": "UNILEVER",
+    "description": "Unilever Nigeria PLC"
+  },
+  {
+    "ticker": "NSENG:NB",
+    "name": "NB",
+    "description": "Nigerian Breweries PLC"
+  },
+  {
+    "ticker": "NSENG:SEPLAT",
+    "name": "SEPLAT",
+    "description": "Seplat Energy PLC"
+  },
+  {
+    "ticker": "NSENG:FCMB",
+    "name": "FCMB",
+    "description": "FCMB Group Plc"
+  },
+  {
+    "ticker": "NSENG:TRANSCORP",
+    "name": "TRANSCORP",
+    "description": "Transnational Corporation of Nigeria PLC"
+  },
+  {
+    "ticker": "NSENG:NGXGROUP",
+    "name": "NGXGROUP",
+    "description": "Nigerian Exchange Group PLC"
+  },
+  {
+    "ticker": "NSENG:WEMABANK",
+    "name": "WEMABANK",
+    "description": "Wema Bank PLC"
+  },
+  {
+    "ticker": "NSENG:NAHCO",
+    "name": "NAHCO",
+    "description": "Nigerian Aviation Handling Company Plc"
+  },
+  {
+    "ticker": "NSENG:JAIZBANK",
+    "name": "JAIZBANK",
+    "description": "Jaiz Bank PLC"
+  },
+  {
+    "ticker": "NSENG:DANGSUGAR",
+    "name": "DANGSUGAR",
+    "description": "Dangote Sugar Refineries Plc"
+  },
+  {
+    "ticker": "NSENG:JAPAULGOLD",
+    "name": "JAPAULGOLD",
+    "description": "Japaul Gold & Ventures PLC"
+  },
+  {
+    "ticker": "NSENG:BUAFOODS",
+    "name": "BUAFOODS",
+    "description": "BUA Foods PLC"
+  },
+  {
+    "ticker": "NSENG:FIDELITYBK",
+    "name": "FIDELITYBK",
+    "description": "Fidelity Bank PLC"
+  },
+  {
+    "ticker": "NSENG:OANDO",
+    "name": "OANDO",
+    "description": "Oando PLC"
+  },
+  {
+    "ticker": "NSENG:STANBIC",
+    "name": "STANBIC",
+    "description": "Stanbic IBTC Holdings Plc"
+  },
+  {
+    "ticker": "NSENG:AIICO",
+    "name": "AIICO",
+    "description": "Aiico Insurance PLC"
+  },
+  {
+    "ticker": "NSENG:BUACEMENT",
+    "name": "BUACEMENT",
+    "description": "BUA Cement Plc"
+  },
+  {
+    "ticker": "NSENG:STERLINGNG",
+    "name": "STERLINGNG",
+    "description": "Sterling Financial Holdings Company PLC"
+  },
+  {
+    "ticker": "NSENG:PZ",
+    "name": "PZ",
+    "description": "PZ Cussons Nigeria PLC"
+  },
+  {
+    "ticker": "NSENG:AFRIPRUD",
+    "name": "AFRIPRUD",
+    "description": "Africa Prudential Plc"
+  },
+  {
+    "ticker": "NSENG:MBENEFIT",
+    "name": "MBENEFIT",
+    "description": "Mutual Benefits Assurance PLC"
+  },
+  {
+    "ticker": "NSENG:BETAGLAS",
+    "name": "BETAGLAS",
+    "description": "Beta Glass Plc."
+  },
+  {
+    "ticker": "NSENG:NESTLE",
+    "name": "NESTLE",
+    "description": "Nestle Nigeria Plc"
+  },
+  {
+    "ticker": "NSENG:TANTALIZER",
+    "name": "TANTALIZER",
+    "description": "Tantalizers PLC"
+  },
+  {
+    "ticker": "NSENG:VITAFOAM",
+    "name": "VITAFOAM",
+    "description": "Vitafoam Nigeria Plc"
+  },
+  {
+    "ticker": "NSENG:UCAP",
+    "name": "UCAP",
+    "description": "United Capital Plc"
+  },
+  {
+    "ticker": "NSENG:CUSTODIAN",
+    "name": "CUSTODIAN",
+    "description": "Custodian Investment Plc"
+  },
+  {
+    "ticker": "NSENG:FIDSON",
+    "name": "FIDSON",
+    "description": "Fidson Healthcare Ltd."
+  },
+  {
+    "ticker": "NSENG:CWG",
+    "name": "CWG",
+    "description": "CWG Plc"
+  },
+  {
+    "ticker": "NSENG:TIP",
+    "name": "TIP",
+    "description": "Initiates PLC"
+  },
+  {
+    "ticker": "NSENG:MANSARD",
+    "name": "MANSARD",
+    "description": "AXA Mansard Insurance PLC"
+  },
+  {
+    "ticker": "NSENG:HONYFLOUR",
+    "name": "HONYFLOUR",
+    "description": "Honeywell Flour Mills Plc"
+  },
+  {
+    "ticker": "NSENG:ETI",
+    "name": "ETI",
+    "description": "Ecobank Transnational Inc"
+  },
+  {
+    "ticker": "NSENG:CHAMS",
+    "name": "CHAMS",
+    "description": "Chams Holding Company Plc"
+  },
+  {
+    "ticker": "NSENG:VERITASKAP",
+    "name": "VERITASKAP",
+    "description": "Veritas Kapital Assurance Plc"
+  },
+  {
+    "ticker": "NSENG:NEM",
+    "name": "NEM",
+    "description": "NEM Insurance Plc"
+  },
+  {
+    "ticker": "NSENG:SOVRENINS",
+    "name": "SOVRENINS",
+    "description": "Sovereign Trust Insurance PLC"
+  },
+  {
+    "ticker": "NSENG:NASCON",
+    "name": "NASCON",
+    "description": "NASCON Allied Industries Plc"
+  },
+  {
+    "ticker": "NSENG:MCNICHOLS",
+    "name": "MCNICHOLS",
+    "description": "McNichols Plc"
+  },
+  {
+    "ticker": "NSENG:MAYBAKER",
+    "name": "MAYBAKER",
+    "description": "May & Baker Nigeria Plc"
+  },
+  {
+    "ticker": "NSENG:DEAPCAP",
+    "name": "DEAPCAP",
+    "description": "DEAP Capital Management & Trust Plc"
+  },
+  {
+    "ticker": "NSENG:VFDGROUP",
+    "name": "VFDGROUP",
+    "description": "VFD Group PLC"
+  },
+  {
+    "ticker": "NSENG:LASACO",
+    "name": "LASACO",
+    "description": "Lasaco Assurance PLC"
+  },
+  {
+    "ticker": "NSENG:CADBURY",
+    "name": "CADBURY",
+    "description": "Cadbury Nigeria PLC"
+  },
+  {
+    "ticker": "NSENG:FTGINSURE",
+    "name": "FTGINSURE",
+    "description": "Fortis Global Insurance Plc"
+  },
+  {
+    "ticker": "NSENG:UACN",
+    "name": "UACN",
+    "description": "U.A.C of Nigeria PLC"
+  },
+  {
+    "ticker": "NSENG:CHAMPION",
+    "name": "CHAMPION",
+    "description": "Champion Breweries PLC"
+  },
+  {
+    "ticker": "NSENG:ELLAHLAKES",
+    "name": "ELLAHLAKES",
+    "description": "Ellah Lakes Plc"
+  },
+  {
+    "ticker": "NSENG:SKYAVN",
+    "name": "SKYAVN",
+    "description": "Skyway Aviation Handling Company Limited"
+  },
+  {
+    "ticker": "NSENG:FTNCOCOA",
+    "name": "FTNCOCOA",
+    "description": "FTN Cocoa Processors Plc"
+  },
+  {
+    "ticker": "NSENG:CUTIX",
+    "name": "CUTIX",
+    "description": "Cutix PLC"
+  },
+  {
+    "ticker": "NSENG:NPFMCRFBK",
+    "name": "NPFMCRFBK",
+    "description": "NPF Microfinance Bank PLC"
+  },
+  {
+    "ticker": "NSENG:RTBRISCOE",
+    "name": "RTBRISCOE",
+    "description": "R.T. Briscoe Nigeria Plc"
+  },
+  {
+    "ticker": "NSENG:NSLTECH",
+    "name": "NSLTECH",
+    "description": "Secure Electronic Technology Plc"
+  },
+  {
+    "ticker": "NSENG:INTBREW",
+    "name": "INTBREW",
+    "description": "International Breweries PLC"
+  },
+  {
+    "ticker": "NSENG:UPDCREIT",
+    "name": "UPDCREIT",
+    "description": "UPDC Real Estate Investment Trust"
+  },
+  {
+    "ticker": "NSENG:ETRANZACT",
+    "name": "ETRANZACT",
+    "description": "E-Tranzact International Plc"
+  },
+  {
+    "ticker": "NSENG:UPDC",
+    "name": "UPDC",
+    "description": "UPDC Plc"
+  },
+  {
+    "ticker": "NSENG:CAP",
+    "name": "CAP",
+    "description": "Chemical & Allied Products Plc"
+  },
+  {
+    "ticker": "NSENG:TRANSCOHOT",
+    "name": "TRANSCOHOT",
+    "description": "Transcorp Hotels PLC"
+  },
+  {
+    "ticker": "NSENG:GUINNESS",
+    "name": "GUINNESS",
+    "description": "Guinness Nigeria PLC"
+  },
+  {
+    "ticker": "NSENG:NEIMETH",
+    "name": "NEIMETH",
+    "description": "Neimeth International Pharmaceutical PLC"
+  },
+  {
+    "ticker": "NSENG:UNIVINSURE",
+    "name": "UNIVINSURE",
+    "description": "Universal Insurance Company Plc"
+  },
+  {
+    "ticker": "NSENG:REDSTAREX",
+    "name": "REDSTAREX",
+    "description": "Redstar Express Plc"
+  },
+  {
+    "ticker": "NSENG:NIDF",
+    "name": "NIDF",
+    "description": "Chapel Hill Denham Lists Nigeria Infrastructure Debt Fund Units NGN"
+  },
+  {
+    "ticker": "NSENG:CAVERTON",
+    "name": "CAVERTON",
+    "description": "Caverton Offshore Support Group Plc"
+  },
+  {
+    "ticker": "NSENG:TRANSPOWER",
+    "name": "TRANSPOWER",
+    "description": "Transcorp Power PLC"
+  },
+  {
+    "ticker": "NSENG:LIVINGTRUST",
+    "name": "LIVINGTRUST",
+    "description": "LivingTrust Mortgage Bank PLC"
+  },
+  {
+    "ticker": "NSENG:IKEJAHOTEL",
+    "name": "IKEJAHOTEL",
+    "description": "Ikeja Hotel PLC"
+  },
+  {
+    "ticker": "NSENG:CORNERST",
+    "name": "CORNERST",
+    "description": "Cornerstone Insurance Company Plc"
+  },
+  {
+    "ticker": "NSENG:LEGENDINT",
+    "name": "LEGENDINT",
+    "description": "LEGEND INTERNET PLC"
+  },
+  {
+    "ticker": "NSENG:BERGER",
+    "name": "BERGER",
+    "description": "Berger Paints Plc"
+  },
+  {
+    "ticker": "NSENG:CILEASING",
+    "name": "CILEASING",
+    "description": "C&I Leasing PLC"
+  },
+  {
+    "ticker": "NSENG:NCR",
+    "name": "NCR",
+    "description": "NCR Nigeria Plc"
+  },
+  {
+    "ticker": "NSENG:LINKASSURE",
+    "name": "LINKASSURE",
+    "description": "Linkage Assurance PLC"
+  },
+  {
+    "ticker": "NSENG:LIVESTOCK",
+    "name": "LIVESTOCK",
+    "description": "Livestock Feeds PLC"
+  },
+  {
+    "ticker": "NSENG:REGALINS",
+    "name": "REGALINS",
+    "description": "Regency Alliance Insurance PLC"
+  },
+  {
+    "ticker": "NSENG:CONOIL",
+    "name": "CONOIL",
+    "description": "Conoil PLC"
+  },
+  {
+    "ticker": "NSENG:UHOMREIT",
+    "name": "UHOMREIT",
+    "description": "UH Real Estate Investment Trust"
+  },
+  {
+    "ticker": "NSENG:OMATEK",
+    "name": "OMATEK",
+    "description": "Omatek Ventures PLC"
+  },
+  {
+    "ticker": "NSENG:ABCTRANS",
+    "name": "ABCTRANS",
+    "description": "ABC Transport PLC"
+  },
+  {
+    "ticker": "NSENG:CONHALLPLC",
+    "name": "CONHALLPLC",
+    "description": "Consolidated Hallmark Holdings Plc"
+  },
+  {
+    "ticker": "NSENG:LEARNAFRCA",
+    "name": "LEARNAFRCA",
+    "description": "Learn Africa PLC"
+  },
+  {
+    "ticker": "NSENG:WAPIC",
+    "name": "WAPIC",
+    "description": "Coronation Insurance Plc"
+  },
+  {
+    "ticker": "NSENG:DAARCOMM",
+    "name": "DAARCOMM",
+    "description": "DAAR Communications PLC"
+  },
+  {
+    "ticker": "NSENG:ROYALEX",
+    "name": "ROYALEX",
+    "description": "Royal Exchange Assurance Nigeria PLC"
+  },
+  {
+    "ticker": "NSENG:SCOA",
+    "name": "SCOA",
+    "description": "SCOA Nigeria PLC"
+  },
+  {
+    "ticker": "NSENG:AVAIF",
+    "name": "AVAIF",
+    "description": "AVA Infrastructure Fund"
+  },
+  {
+    "ticker": "NSENG:PRESTIGE",
+    "name": "PRESTIGE",
+    "description": "Prestige Assurance Plc"
+  },
+  {
+    "ticker": "NSENG:MECURE",
+    "name": "MECURE",
+    "description": "Mecure Industries PLC"
+  },
+  {
+    "ticker": "NSENG:MULTIVERSE",
+    "name": "MULTIVERSE",
+    "description": "Multiverse Mining & Exploration PLC"
+  },
+  {
+    "ticker": "NSENG:INFINITY",
+    "name": "INFINITY",
+    "description": "Infinity Trust Mortgage Bank Plc"
+  },
+  {
+    "ticker": "NSENG:ABBEYBDS",
+    "name": "ABBEYBDS",
+    "description": "Abbey Mortgage Bank Plc"
+  },
+  {
+    "ticker": "NSENG:ETERNA",
+    "name": "ETERNA",
+    "description": "Eterna PLC"
+  },
+  {
+    "ticker": "NSENG:NREIT",
+    "name": "NREIT",
+    "description": "Chapel Hill Denham Management Limited"
+  },
+  {
+    "ticker": "NSENG:ACADEMY",
+    "name": "ACADEMY",
+    "description": "Academy Press PLC"
+  },
+  {
+    "ticker": "NSENG:MEYER",
+    "name": "MEYER",
+    "description": "Meyer PLC"
+  },
+  {
+    "ticker": "NSENG:HMCALL",
+    "name": "HMCALL",
+    "description": "Haldane McCall Plc"
+  },
+  {
+    "ticker": "NSENG:AUSTINLAZ",
+    "name": "AUSTINLAZ",
+    "description": "Austin Laz & Company Plc"
+  },
+  {
+    "ticker": "NSENG:UPL",
+    "name": "UPL",
+    "description": "University Press PLC"
+  },
+  {
+    "ticker": "NSENG:TRIPPLEG",
+    "name": "TRIPPLEG",
+    "description": "Tripple Gee and Company Plc."
+  },
+  {
+    "ticker": "NSENG:GUINEAINS",
+    "name": "GUINEAINS",
+    "description": "Guinea Insurance PLC"
+  },
+  {
+    "ticker": "NSENG:TOTAL",
+    "name": "TOTAL",
+    "description": "TotalEnergies Marketing Nigeria Plc"
+  },
+  {
+    "ticker": "NSENG:ALEX",
+    "name": "ALEX",
+    "description": "Aluminium Extrusion Industries PLC"
+  },
+  {
+    "ticker": "NSENG:JOHNHOLT",
+    "name": "JOHNHOLT",
+    "description": "John Holt PLC"
+  },
+  {
+    "ticker": "NSENG:GEREGU",
+    "name": "GEREGU",
+    "description": "Geregu Power Plc"
+  },
+  {
+    "ticker": "NSENG:UNIONDICON",
+    "name": "UNIONDICON",
+    "description": "Union Dicon Salt Plc"
+  },
+  {
+    "ticker": "NSENG:SFSREIT",
+    "name": "SFSREIT",
+    "description": "SFS Real Estate Investment Trust"
+  },
+  {
+    "ticker": "NSENG:INTENEGINS",
+    "name": "INTENEGINS",
+    "description": "International Energy Insurance Company"
+  },
+  {
+    "ticker": "NSENG:CNIF",
+    "name": "CNIF",
+    "description": "Coronation Infrastructure Fund"
+  },
+  {
+    "ticker": "NSENG:SUNUASSUR",
+    "name": "SUNUASSUR",
+    "description": "SUNU Assurances Nigeria Plc"
+  },
+  {
+    "ticker": "NSENG:PREMPAINTS",
+    "name": "PREMPAINTS",
+    "description": "Premier Paints PLC"
+  },
+  {
+    "ticker": "NSENG:EUNISELL",
+    "name": "EUNISELL",
+    "description": "Eunisell Interlinked Plc"
+  },
+  {
+    "ticker": "NSENG:NNFM",
+    "name": "NNFM",
+    "description": "Northern Nigeria Flour Mills Plc"
+  },
+  {
+    "ticker": "NSENG:IMG",
+    "name": "IMG",
+    "description": "Industrial and Medical Gases Nigeria PLC"
+  },
+  {
+    "ticker": "NSENG:CHELLARAM",
+    "name": "CHELLARAM",
+    "description": "Chellarams PLC"
+  },
+  {
+    "ticker": "NSENG:MORISON",
+    "name": "MORISON",
+    "description": "Morison Industries PLC"
+  },
+  {
+    "ticker": "NSENG:ENAMELWA",
+    "name": "ENAMELWA",
+    "description": "Nigerian Enamelware Company Plc"
+  },
+  {
+    "ticker": "NSENG:AIRTELAFRI",
+    "name": "AIRTELAFRI",
+    "description": "Airtel Africa Plc"
+  },
+  {
+    "ticker": "NSENG:JULI",
+    "name": "JULI",
+    "description": "Juli Plc"
+  },
+  {
+    "ticker": "NSENG:MOFIREIF",
+    "name": "MOFIREIF",
+    "description": "MOFI Real Estate Investment Fund Units NGN"
+  },
+  {
+    "ticker": "NSENG:TRANSEXPR",
+    "name": "TRANSEXPR",
+    "description": "Trans-Nationwide Express Plc"
+  },
+  {
+    "ticker": "NSENG:PHARMDEKO",
+    "name": "PHARMDEKO",
+    "description": "Pharma-Deko PLC"
+  },
+  {
+    "ticker": "NSENG:VANLEER",
+    "name": "VANLEER",
+    "description": "Greif Nigeria PLC"
+  },
+  {
+    "ticker": "NSENG:ZICHIS",
+    "name": "ZICHIS",
+    "description": "Zichis Agro-Allied Industries Plc"
+  },
+  {
+    "ticker": "NSENG:UNITYBNK",
+    "name": "UNITYBNK",
+    "description": "Unity Bank PLC"
+  },
+  {
+    "ticker": "NSENG:EKOCORP",
+    "name": "EKOCORP",
+    "description": "Ekocorp PLC"
+  },
+  {
+    "ticker": "NSENG:THOMASWY",
+    "name": "THOMASWY",
+    "description": "Thomas Wyatt Nigeria Plc"
+  },
+  {
+    "ticker": "NSENG:STACO",
+    "name": "STACO",
+    "description": "Staco Insurance PLC"
+  },
+  {
+    "ticker": "NSENG:DUNLOP",
+    "name": "DUNLOP",
+    "description": "DN Tyre & Rubber Plc"
+  },
+  {
+    "ticker": "NSENG:GOLDBREW",
+    "name": "GOLDBREW",
+    "description": "Golden Guinea Breweries Plc"
+  },
+  {
+    "ticker": "NSENG:AFRINSURE",
+    "name": "AFRINSURE",
+    "description": "African Alliance Insurance PLC"
+  },
+  {
+    "ticker": "NSENG:AFROMEDIA",
+    "name": "AFROMEDIA",
+    "description": "Afromedia PLC"
+  },
+  {
+    "ticker": "NSENG:MULTITREX",
+    "name": "MULTITREX",
+    "description": "Multi-Trex Integrated Foods Plc"
+  }
+]

@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# Environment
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+
+# Temp
+*.tmp
+tempCodeRunnerFile.py
+
+# IDE
+.vscode/
+.idea/
+
+# Local databases
+*.db
+db/
+
+# Data files
+*.jsonl
+*.csv
+
+# OS
+.DS_Store
+Thumbs.db

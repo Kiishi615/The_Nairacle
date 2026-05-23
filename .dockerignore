@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# Logs & temp
+logs/
+*.log
+*.tmp
+tempCodeRunnerFile.py
+
+# Secrets (injected via Railway env vars)
+.env
+.env.*
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Local databases (prod uses PostgreSQL)
+db/
+*.db
+
+# Large data files
+*.jsonl
+*.csv
+
+# Dev / docs
+*.md
+*.ipynb
+LICENSE
+
+# Railway config (not needed inside container)
+railway.toml
+
+# Video asset (too large for container)
+research_agent/ai_orb.mp4

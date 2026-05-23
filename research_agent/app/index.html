@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+  <meta name="theme-color" content="#170C2C"/>
+  <title>Nairacle — Nigerian Markets Intelligence</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+<div id="app" class="app">
+
+  <!-- BG -->
+  <div class="app-bg">
+    <img src="background.jpg" alt="" class="app-bg__img"/>
+    <div class="app-bg__overlay"></div>
+  </div>
+
+  <!-- Main App Menu Button (Fixed Top Left) -->
+  <button id="btn-menu" class="btn-menu nebula-glass">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="#F0F0F0" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+
+  <!-- Mobile overlay -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside id="sidebar" class="sidebar">
+    <!-- Logo + Brand -->
+    <div class="sidebar__logo">
+      <img src="profile-photo.png" alt="Nairacle" class="sidebar__logo-img"/>
+      <span class="sidebar__brand">Nairacle</span>
+    </div>
+
+    <!-- New Chat -->
+    <div class="sidebar__new-chat-wrap">
+      <button id="btn-new-chat" class="btn-new-chat nebula-gradient">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M15.5247 3.105c1.876.001 3.727.427 5.414 1.246a12.4 12.4 0 0 1 4.33 3.481 12.4 12.4 0 0 1 2.378 5.021c.404 1.831.387 3.731-.048 5.555a12.4 12.4 0 0 1-2.851 5.029 12.4 12.4 0 0 1-4.39 3.405 12.4 12.4 0 0 1-5.433 1.151 12.4 12.4 0 0 1-5.393-1.333l-.188-.1-5.659 1.413a.78.78 0 0 1-.934-.791l.022-.129 1.413-5.657-.098-.187A12.3 12.3 0 0 1 3.155 16.655L3.116 16.062 3.105 15.525c0-3.294 1.309-6.453 3.638-8.782a12.42 12.42 0 0 1 8.782-3.638z" fill="#F0F0F0"/></svg>
+        <span>New Chat</span>
+      </button>
+    </div>
+
+    <!-- Recent -->
+    <div class="sidebar__nav" id="sidebar-nav">
+      <div class="sidebar__section-head">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M13.584 2.717a10.9 10.9 0 0 1 4.737 1.09 10.9 10.9 0 0 1 3.693 2.846 10.9 10.9 0 0 1 2.194 4.176.68.68 0 0 1-1.282.44 10.1 10.1 0 0 0-1.82-3.64c-.727-1-1.676-1.81-2.784-2.356a9.5 9.5 0 0 0-3.523-1.034 9.5 9.5 0 0 0-3.71.387 9.5 9.5 0 0 0-3.15 1.89H8.83a.68.68 0 0 1 0 1.358H4.754a.68.68 0 0 1-.68-.68V4.754a.68.68 0 0 1 1.36 0v1.641A10.9 10.9 0 0 1 13.584 2.717zM12.226 10.188v5.434h4.754a.68.68 0 0 0 0-1.359h-3.396v-4.075a.68.68 0 0 0-1.358 0z" fill="#F0F0F0"/></svg>
+        <span>Recent</span>
+      </div>
+      <div class="sidebar__recent-list" id="session-list">
+        <div class="sidebar__empty">No sessions yet</div>
+      </div>
+    </div>
+
+
+  </aside>
+
+  <!-- ========== MAIN ========== -->
+  <main class="main">
+
+
+
+    <!-- Welcome (visible when no messages) -->
+    <div id="welcome" class="welcome">
+      <div class="welcome__logo-wrap">
+        <div class="welcome__glow"></div>
+        <img src="profile-photo.png" alt="" class="welcome__logo"/>
+      </div>
+      <h1 class="welcome__title">Your Nigerian Markets Co-Pilot</h1>
+      <p class="welcome__sub">I am Nairacle. Ask me about stocks, banking, economic policy, or any financial topic in Nigeria.</p>
+
+      <div class="welcome__cards">
+        <button class="suggestion-card nebula-card" data-q="Analyse the top-performing stocks on NGX today">
+          <div class="suggestion-card__head">
+            <div class="suggestion-card__icon nebula-icon-bg"><svg width="25" height="25" viewBox="0 0 25 25" fill="none"><path d="M15.853 4.499a.58.58 0 0 0-1.142.074l-6.113 15.894a.58.58 0 0 0 1.142.074L15.853 4.5zM7.122 7.482a.58.58 0 0 0-.933.863L3.862 12.226l3.325 3.881a.58.58 0 0 0-.929.753L2.592 12.626a.58.58 0 0 1 0-.797l3.668-4.28a.58.58 0 0 1 .862-.067zM17.33 17.582a.58.58 0 0 0 .862.067l3.668-4.28a.58.58 0 0 0 0-.797l-3.668-4.28a.58.58 0 0 0-.929.754l3.328 3.88-3.328 3.88a.58.58 0 0 0 .067.776z" fill="#F0F0F0"/></svg></div>
+            <span>NGX Analysis</span>
+          </div>
+          <p>"Show me the top gainers and losers on the NGX today..."</p>
+        </button>
+        <button class="suggestion-card nebula-card" data-q="What is the current CBN monetary policy stance?">
+          <div class="suggestion-card__head">
+            <div class="suggestion-card__icon nebula-icon-bg"><svg width="25" height="25" viewBox="0 0 25 25" fill="none"><path d="M3.668 12.226a8.558 8.558 0 1 1 17.116 0 8.558 8.558 0 0 1-17.116 0zm8.558-9.78a9.78 9.78 0 1 0 0 19.561 9.78 9.78 0 0 0 0-19.56zM7.454 9.072l3.988 1.812a4.28 4.28 0 0 1 1.92 1.92l1.812 3.988 1.812-3.988a4.28 4.28 0 0 0-1.92-1.92L7.454 9.072z" fill="#F0F0F0"/></svg></div>
+            <span>CBN Policy</span>
+          </div>
+          <p>"Explain the latest CBN interest rate decision..."</p>
+        </button>
+        <button class="suggestion-card nebula-card" data-q="Give me the current USD to NGN exchange rate analysis">
+          <div class="suggestion-card__head">
+            <div class="suggestion-card__icon nebula-icon-bg"><svg width="25" height="25" viewBox="0 0 25 25" fill="none"><path d="M6.969 4.827a4.9 4.9 0 0 1 5.257-1.223 4.9 4.9 0 0 1 5.257 1.223l.153.767.496.099a4.3 4.3 0 0 1 3.652 3.234v.242a4.3 4.3 0 0 1-.984 2.488 4.9 4.9 0 0 1 1.74 3.456 4.9 4.9 0 0 1-3.118 4.772l-.045.226a5.6 5.6 0 0 1-9.72 0l-.045-.226A5.6 5.6 0 0 1 2.475 15.472a4.9 4.9 0 0 1 1.74-3.456A4.3 4.3 0 0 1 3.668 8.927v-.242a4.3 4.3 0 0 1 3.652-3.234l.496-.1.153-.524z" fill="#F0F0F0"/></svg></div>
+            <span>FX Rates</span>
+          </div>
+          <p>"What is driving the Naira exchange rate today..."</p>
+        </button>
+      </div>
+    </div>
+
+    <!-- Messages area -->
+    <div id="chat-area" class="chat-area" style="display:none;">
+      <div id="messages" class="messages"></div>
+      <!-- Typing indicator -->
+      <div id="typing" class="msg msg--ai" style="display:none;">
+        <div class="msg__avatar-wrap nebula-icon-bg">
+          <img src="profile-photo.png" alt="Thinking" class="msg__avatar-img"/>
+        </div>
+        <div class="msg__bubble nebula-card msg__bubble--ai">
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-wrap">
+      <div class="input-box nebula-input">
+        <textarea id="msg-input" placeholder="Ask Nairacle anything..." rows="1"></textarea>
+        <button id="btn-send" class="btn-send nebula-gradient" disabled>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3.998 2.459a.58.58 0 0 1 .629-.07l17.465 8.733a.58.58 0 0 1 0 1.042L4.627 20.897a.58.58 0 0 1-.823-.671l2.29-8.583L3.804 3.061a.58.58 0 0 1 .194-.602zM7.142 12.226l-1.88 7.051 15.268-7.634L5.262 4.01l1.88 7.051h7.704a.58.58 0 1 1 0 1.165H7.142z" fill="#F0F0F0"/></svg>
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
