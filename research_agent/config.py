@@ -132,7 +132,6 @@ def _require_env(key: str, friendly_name: str = "") -> str:
     return val
 
 
-ANTHROPIC_API_KEY = _require_env("ANTHROPIC_API_KEY", "Anthropic API key")
 OPENAI_API_KEY = _require_env("OPENAI_API_KEY", "OpenAI API key for embeddings")
 PINECONE_API_KEY = _require_env("PINECONE_API_KEY", "Pinecone API key")
 PINECONE_INDEX_NAME = _require_env("PINECONE_INDEX_NAME", "Pinecone index name")
@@ -172,6 +171,29 @@ CHAT_MODEL = _get("model", "chat_model")
 EMBEDDING_MODEL = _get("model", "embedding_model")
 OPUS_MODEL = _get("model", "opus_model")
 OPUS_THINKING_BUDGET = _get_int("model", "opus_thinking_budget")
+
+# ---------------------------------------------------------------------------
+# LLM API key — auto-detect provider from config, validate the right key
+# ---------------------------------------------------------------------------
+# init_chat_model reads these env vars automatically. We just validate early
+# so you get a clear error at startup instead of mid-request.
+
+_PROVIDER_KEY_MAP = {
+    "google_genai": ("GOOGLE_API_KEY", "Google Gemini API key"),
+    "gemini":       ("GOOGLE_API_KEY", "Google Gemini API key"),
+    "anthropic":    ("ANTHROPIC_API_KEY", "Anthropic API key"),
+    "openai":       ("OPENAI_API_KEY",    "OpenAI API key"),
+}
+
+def _validate_llm_key(model_string: str) -> None:
+    """Check that the env var for the model's provider is set."""
+    provider = model_string.split(":")[0] if ":" in model_string else ""
+    if provider in _PROVIDER_KEY_MAP:
+        env_var, friendly = _PROVIDER_KEY_MAP[provider]
+        _require_env(env_var, f"{friendly} (needed by {model_string})")
+
+_validate_llm_key(CHAT_MODEL)
+_validate_llm_key(OPUS_MODEL)
 
 # ---------------------------------------------------------------------------
 # Agent defaults

@@ -67,7 +67,7 @@ def setup_logging(
     # Silence noisy third-party loggers
     # ------------------------------------------------------------------
     for noisy in (
-        "httpx", "httpcore", "openai", "anthropic",
+        "httpx", "httpcore", "openai", "anthropic", "google",
         "langchain", "langgraph", "langsmith",
         "pinecone", "tavily", "urllib3",
     ):

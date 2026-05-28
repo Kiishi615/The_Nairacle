@@ -16,7 +16,7 @@ Pattern: mirrors robust_agent.py — same retry decorator, same @tool
          style, same create_agent() with prompt-based tool ordering.
 """
 
-import anthropic
+
 import functools
 import json
 import logging
@@ -40,7 +40,6 @@ from tavily import TavilyClient
 from tradingview_screener import Query
 
 from research_agent.config import (
-    ANTHROPIC_API_KEY,
     CHAT_MODEL,
     DEFAULT_CUTOFF_MONTHS,
     EMBEDDING_MODEL,
@@ -49,7 +48,6 @@ from research_agent.config import (
     NIGERIAN_STOCKS_PATH,
     OPENAI_API_KEY,
     OPUS_MODEL,
-    OPUS_THINKING_BUDGET,
     PINECONE_API_KEY,
     PINECONE_INDEX_NAME,
     PINECONE_TOP_K,
@@ -150,8 +148,8 @@ openai_client = OpenAI(api_key=OPENAI_API_KEY)
 pc = Pinecone(api_key=PINECONE_API_KEY)
 index = pc.Index(name=PINECONE_INDEX_NAME)
 
-# Anthropic client — used for Opus escalation (extended thinking)
-opus_client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+# Opus escalation model — uses init_chat_model for provider-agnostic switching
+opus_model_instance = init_chat_model(OPUS_MODEL)
 
 # Nigerian stocks lookup table
 try:
@@ -256,18 +254,11 @@ def _embed_query(text: str) -> list[float]:
     return response.data[0].embedding
 
 
-@traceable(run_type="llm", name="anthropic_opus_thinking")
-def _call_opus(prompt: str) -> anthropic.types.Message:
-    """Call Anthropic Opus with extended thinking. Traced by LangSmith."""
-    return opus_client.messages.create(
-        model=OPUS_MODEL,
-        max_tokens=16000,
-        thinking={
-            "type": "enabled",
-            "budget_tokens": OPUS_THINKING_BUDGET,
-        },
-        messages=[{"role": "user", "content": prompt}],
-    )
+@traceable(run_type="llm", name="opus_thinking")
+def _call_opus(prompt: str) -> str:
+    """Call the Opus-tier model via LangChain. Traced by LangSmith."""
+    response = opus_model_instance.invoke(prompt)
+    return response.content
 
 
 # ---------------------------------------------------------------------------
@@ -1159,9 +1150,9 @@ def send_telegram_message(chat_id: str, content: str) -> str:
     ),
 )
 def escalate_to_opus(question: str, context: str) -> str:
-    """Escalate a complex reasoning task to Claude Opus with thinking.
+    """Escalate a complex reasoning task to the Opus-tier model.
 
-    This tool calls the Anthropic API directly with extended thinking
+    This tool calls a powerful model via LangChain
     enabled, giving Opus a large thinking budget to work through
     difficult analytical problems.
 
@@ -1182,8 +1173,8 @@ def escalate_to_opus(question: str, context: str) -> str:
     )
     def _escalate(q, ctx):
         logger.info(
-            "Escalating to Opus (model=%s, thinking_budget=%d): '%s'",
-            OPUS_MODEL, OPUS_THINKING_BUDGET, q[:100],
+            "Escalating to Opus (model=%s): '%s'",
+            OPUS_MODEL, q[:100],
         )
 
         prompt = (
@@ -1205,25 +1196,10 @@ def escalate_to_opus(question: str, context: str) -> str:
             f"hedge excessively. Give a clear analytical verdict."
         )
 
-        response = _call_opus(prompt)
+        result = _call_opus(prompt)
 
-        # Extract text blocks from the response (skip thinking blocks)
-        output_parts = []
-        for block in response.content:
-            if block.type == "text":
-                output_parts.append(block.text)
-
-        if not output_parts:
+        if not result:
             return "Opus returned no text output."
-
-        result = "\n".join(output_parts)
-
-        # Log token usage
-        usage = response.usage
-        logger.info(
-            "Opus response: %d input tokens, %d output tokens",
-            usage.input_tokens, usage.output_tokens,
-        )
 
         return f"═══ OPUS DEEP ANALYSIS ═══\n\n{result}\n\n═══ END OPUS ANALYSIS ═══"
 
