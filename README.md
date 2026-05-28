@@ -1,3 +1,12 @@
+---
+title: Nairacle
+emoji: 🦀
+colorFrom: purple
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # Nairacle Research Agent
 
 A Nigerian financial research agent powered by LangChain, Anthropic Claude, Pinecone, and Tavily. Provides an intelligent Telegram Mini App interface for researching Nigerian markets, banking, economy, stock prices, and policy.
@@ -95,3 +104,4 @@ docker build -t nairacle-agent .
 # Run
 docker run -p 8000:8000 --env-file .env nairacle-agent
 ```
+
