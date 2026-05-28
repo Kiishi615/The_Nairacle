@@ -21,6 +21,7 @@ import sys
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Header, Request
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from telegram import Update
@@ -299,6 +300,12 @@ except Exception as exc:
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
+
+@app.get("/")
+async def root():
+    """Redirect root to the Mini App frontend."""
+    return RedirectResponse(url="/app/")
+
 
 @app.get("/health")
 async def health():
