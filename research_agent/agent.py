@@ -20,6 +20,8 @@ Pattern: mirrors robust_agent.py — same retry decorator, same @tool
 import functools
 import json
 import logging
+import math
+import re
 import sqlite3
 import threading
 import time
@@ -51,6 +53,8 @@ from research_agent.config import (
     PINECONE_API_KEY,
     PINECONE_INDEX_NAME,
     PINECONE_TOP_K,
+    RECENCY_BOOST_WEIGHT,
+    RECENCY_HALF_LIFE_DAYS,
     RERANKER_TOP_K,
     RETRIEVAL_STRATEGY,
     SCRIPT_DIR,
@@ -354,22 +358,115 @@ tavily_pool = TavilyKeyPool(TAVILY_API_KEYS)
 
 
 # ---------------------------------------------------------------------------
+# Safe Date Parsing — ensures real calendar date comparison, never raw text
+# ---------------------------------------------------------------------------
+
+_ISO_DATE_RE = re.compile(r"\b(\d{4}-\d{2}-\d{2})\b")
+_URL_DATE_RE = re.compile(r"/(\d{4})/(\d{2})/(\d{2})/")
+_MONTH_DATE_RE = re.compile(
+    r"\b("
+    r"(?:January|February|March|April|May|June|July|August|September|October|November|December|"
+    r"Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)"
+    r"\.?\s+\d{1,2},\s+\d{4}"
+    r")\b"
+)
+_EPOCH_DATE = date(1970, 1, 1)
+
+
+def _parse_date(raw_date: str, url: str = "") -> date:
+    """Parse an article or cutoff date into a real `datetime.date` object.
+
+    Checks in order:
+      1. First YYYY-MM-DD in *raw_date*
+      2. First month-name date (e.g. 'July 30, 2026') in *raw_date*
+      3. /YYYY/MM/DD/ inside *url*
+      4. Fallback sentinel date(1970, 1, 1) if nothing matches
+    """
+    text = str(raw_date or "").strip()
+
+    iso_match = _ISO_DATE_RE.search(text)
+    if iso_match:
+        try:
+            return datetime.strptime(iso_match.group(1), "%Y-%m-%d").date()
+        except ValueError:
+            pass
+
+    month_match = _MONTH_DATE_RE.search(text)
+    if month_match:
+        token = month_match.group(1).replace("Sept", "Sep").replace(".", "")
+        for fmt in ("%B %d, %Y", "%b %d, %Y"):
+            try:
+                return datetime.strptime(token, fmt).date()
+            except ValueError:
+                continue
+
+    url_match = _URL_DATE_RE.search(str(url or ""))
+    if url_match:
+        candidate = f"{url_match.group(1)}-{url_match.group(2)}-{url_match.group(3)}"
+        try:
+            return datetime.strptime(candidate, "%Y-%m-%d").date()
+        except ValueError:
+            pass
+
+    return _EPOCH_DATE
+
+
+def _apply_recency_boost(
+    ranked: list,
+    half_life_days: int = RECENCY_HALF_LIFE_DAYS,
+    boost_weight: float = RECENCY_BOOST_WEIGHT,
+) -> list:
+    """Blend reranker relevance scores with a soft time-decay recency bonus.
+
+    Formula:
+        recency_weight = 1 / (1 + age_days / half_life_days)
+        final_score = relevance * ((1 - boost_weight) + boost_weight * recency_weight)
+    """
+    if not ranked or boost_weight <= 0.0:
+        return ranked
+
+    today = date.today()
+    needs_sigmoid = any(score < 0.0 or score > 1.0 for _, score in ranked)
+
+    boosted = []
+    for match, raw_score in ranked:
+        rel = (
+            1.0 / (1.0 + math.exp(-max(-50.0, min(50.0, float(raw_score)))))
+            if needs_sigmoid
+            else float(raw_score)
+        )
+        meta = match.metadata or {}
+        article_date = _parse_date(meta.get("date", ""), meta.get("url", ""))
+        age_days = max(0, (today - article_date).days)
+        recency_weight = 1.0 / (1.0 + age_days / max(1, half_life_days))
+        final_score = rel * ((1.0 - boost_weight) + boost_weight * recency_weight)
+        boosted.append((match, final_score))
+
+    boosted.sort(key=lambda item: item[1], reverse=True)
+    return boosted
+
+
+# ---------------------------------------------------------------------------
 # Tools
 # ---------------------------------------------------------------------------
 
 @tool(
     "search_knowledge_base",
     description=(
-        "Search the internal knowledge base of 4,792 Nigerian financial "
+        "Search the internal knowledge base of Nigerian financial "
         "news articles from Nairametrics. Use this FIRST for any question "
         "about Nigerian finance, economy, banking, markets, or policy. "
         "Returns article summaries with titles, dates, and URLs.\n\n"
         "Args:\n"
         "  query: The search query.\n"
-        "  cutoff_date: Optional earliest date (YYYY-MM-DD) to include. "
-        "Only articles on or after this date are returned. Example: "
-        "'2026-03-01' for articles from March 2026 onwards. If the user "
-        "says 'last 2 months', calculate the date from today and pass it."
+        "  cutoff_date: Optional earliest date in strict YYYY-MM-DD format "
+        "(e.g. '2026-03-01' or '2024-01-01'). NEVER pass month names or "
+        "phrases like 'March 2026', 'last 2 months', or '2024'. Only articles "
+        "on or after this date are returned. If the user asks about a relative "
+        "or historical period (e.g. 'last 2 months', 'Q4 2023', 'first half of "
+        "2024'), compute the period's start date in YYYY-MM-DD and pass it. "
+        "Leave empty ('') if no timeframe is mentioned (searches the full "
+        "archive with a soft preference for newer articles)."
     ),
 )
 def search_knowledge_base(query: str, cutoff_date: str = "") -> str:
@@ -403,29 +500,27 @@ def search_knowledge_base(query: str, cutoff_date: str = "") -> str:
         if not results.matches:
             return "No relevant articles found in the knowledge base."
 
-        # ----- Client-side date filtering --------------------------------
-        # Pinecone only supports $gte on numeric fields, but our dates are
-        # stored as YYYY-MM-DD strings, which sort lexicographically.
-        # So we filter here in Python after retrieval.
-        if cutoff_date:
-            min_date = cutoff_date
+        # ----- Client-side date filtering / soft recency boost -----------
+        # If the caller supplies an explicit cutoff_date, apply it as a hard
+        # filter (with an unfiltered fallback if it removes all 50 matches).
+        # If no cutoff_date is given, keep all 50 candidates in hybrid mode
+        # and apply a soft recency boost after reranking so recent articles
+        # break ties without deleting strong older matches.
+        explicit_min_date = _parse_date(cutoff_date) if cutoff_date else _EPOCH_DATE
+        has_explicit_cutoff = explicit_min_date != _EPOCH_DATE
+
+        if has_explicit_cutoff:
+            filtered = [
+                m for m in results.matches
+                if _parse_date(m.metadata.get("date", ""), m.metadata.get("url", "")) >= explicit_min_date
+            ]
+            if not filtered:
+                logger.info(
+                    "Date filter (%s) removed all results — falling back to "
+                    "unfiltered.", explicit_min_date.isoformat(),
+                )
+                filtered = results.matches
         else:
-            # Default: go back DEFAULT_CUTOFF_MONTHS from today
-            min_date = (
-                date.today() - relativedelta(months=DEFAULT_CUTOFF_MONTHS)
-            ).isoformat()
-
-        filtered = [
-            m for m in results.matches
-            if m.metadata.get("date", "1970-01-01") >= min_date
-        ]
-
-        if not filtered:
-            # Fallback: widen to all results if filter was too narrow
-            logger.info(
-                "Date filter (%s) removed all results — falling back to "
-                "unfiltered.", min_date,
-            )
             filtered = results.matches
 
         # ----- Apply retrieval strategy ---------------------------------
@@ -433,9 +528,19 @@ def search_knowledge_base(query: str, cutoff_date: str = "") -> str:
         strategy = RETRIEVAL_STRATEGY
 
         if strategy == "chronological":
+            if not has_explicit_cutoff:
+                default_min_date = date.today() - relativedelta(months=DEFAULT_CUTOFF_MONTHS)
+                recent = [
+                    m for m in filtered
+                    if _parse_date(m.metadata.get("date", ""), m.metadata.get("url", "")) >= default_min_date
+                ]
+                filtered = recent or filtered
             # Sort by date descending (newest first)
-            filtered.sort(
-                key=lambda m: m.metadata.get("date", "1970-01-01"),
+            filtered = sorted(
+                filtered,
+                key=lambda m: _parse_date(
+                    m.metadata.get("date", ""), m.metadata.get("url", "")
+                ),
                 reverse=True,
             )
             for i, match in enumerate(filtered[:RERANKER_TOP_K], 1):
@@ -449,7 +554,7 @@ def search_knowledge_base(query: str, cutoff_date: str = "") -> str:
                 )
 
         elif strategy == "reranker":
-            # Cross-encoder rerank (ignores date ordering)
+            # Pure cross-encoder rerank (no recency boost)
             ranked = rerank(q, filtered, top_k=RERANKER_TOP_K)
             for i, (match, ce_score) in enumerate(ranked, 1):
                 meta = match.metadata
@@ -461,8 +566,12 @@ def search_knowledge_base(query: str, cutoff_date: str = "") -> str:
                     f"    URL: {meta.get('url', '')}"
                 )
 
-        else:  # hybrid — date-filtered + reranked
-            ranked = rerank(q, filtered, top_k=RERANKER_TOP_K)
+        else:  # hybrid — explicit cutoff (if given) OR soft recency boost + rerank
+            if has_explicit_cutoff:
+                ranked = rerank(q, filtered, top_k=RERANKER_TOP_K)
+            else:
+                all_ranked = rerank(q, filtered, top_k=len(filtered))
+                ranked = _apply_recency_boost(all_ranked)[:RERANKER_TOP_K]
             for i, (match, ce_score) in enumerate(ranked, 1):
                 meta = match.metadata
                 output.append(
@@ -1241,12 +1350,15 @@ timeframes like "last 2 months" or "since March".
 
 1. Start with the knowledge base for Nigerian financial topics.
    - The search_knowledge_base tool accepts an optional **cutoff_date**
-     parameter (YYYY-MM-DD). When the user mentions a timeframe (e.g.
-     "in the last 3 months", "since January", "after March 13th"),
-     calculate the corresponding date from today ({today}) and pass it
-     as cutoff_date so only recent articles are returned.
-   - If no timeframe is mentioned, omit cutoff_date (a sensible default
-     is applied automatically).
+     parameter. **ALWAYS format cutoff_date strictly as YYYY-MM-DD**
+     (for example: `2026-03-01` or `2024-01-01`). Never pass text like
+     `"March 2026"`, `"last 3 months"`, or `"2024"`.
+   - When the user mentions a relative or past timeframe (e.g.
+     "in the last 3 months", "since January", "after March 13th",
+     "in 2024", "Q4 2023"), calculate the earliest YYYY-MM-DD date of
+     that period from today ({today}) and pass it as `cutoff_date`.
+   - If no timeframe is mentioned, omit `cutoff_date` (or pass `""`) so
+     the full archive is searched with a soft preference for newer articles.
 2. After retrieving results, evaluate sufficiency:
    - If the information is weak, outdated, or not clearly explanatory -> use internet search.
 3. Use both sources when necessary and clearly distinguish between them.

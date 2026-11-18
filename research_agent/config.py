@@ -76,17 +76,23 @@ if not _read_ok:
     raise RuntimeError(f"Failed to parse: {_config_path}")
 
 
-def _get(section: str, key: str, env_prefix: str = "APP") -> str:
+def _get(section: str, key: str, env_prefix: str = "APP", fallback: str | None = None) -> str:
     """Return a config value — env var override takes priority."""
     env_var = f"{env_prefix}_{section}_{key}".upper()
     env_value = os.environ.get(env_var)
     if env_value is not None:
         return env_value
+    if fallback is not None:
+        return _parser.get(section, key, fallback=fallback)
     return _parser.get(section, key)
 
 
-def _get_int(section: str, key: str) -> int:
-    return int(_get(section, key))
+def _get_int(section: str, key: str, fallback: int | None = None) -> int:
+    return int(_get(section, key, fallback=str(fallback) if fallback is not None else None))
+
+
+def _get_float(section: str, key: str, fallback: float | None = None) -> float:
+    return float(_get(section, key, fallback=str(fallback) if fallback is not None else None))
 
 
 def _get_bool(section: str, key: str) -> bool:
@@ -208,6 +214,8 @@ CONTEXT_WINDOW_SIZE = _get_int("agent", "context_window_size")
 SUMMARY_TRIGGER = _get_int("agent", "summary_trigger")
 RETRIEVAL_STRATEGY = _get("agent", "retrieval_strategy").strip().lower()
 DEFAULT_CUTOFF_MONTHS = _get_int("agent", "default_cutoff_months")
+RECENCY_HALF_LIFE_DAYS = _get_int("agent", "recency_half_life_days", fallback=180)
+RECENCY_BOOST_WEIGHT = _get_float("agent", "recency_boost_weight", fallback=0.15)
 
 # ---------------------------------------------------------------------------
 # Session DB

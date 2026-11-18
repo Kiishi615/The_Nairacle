@@ -32,11 +32,14 @@ def rerank(query: str, matches: list, top_k: int) -> list:
     if not matches:
         return []
 
-    # Build passages for the inference API
+    # Build passages for the inference API (include date so the reranker can match temporal clues)
     passages = []
     for m in matches:
-        meta = m.metadata
+        meta = m.metadata or {}
+        article_date = str(meta.get("date", "")).strip()
+        date_prefix = f"Date: {article_date}. " if article_date else ""
         text = (
+            f"{date_prefix}"
             f"{meta.get('title', '')}. "
             f"{meta.get('summary', '')}"
         )
